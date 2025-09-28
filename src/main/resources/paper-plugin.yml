@@ -1,0 +1,4 @@
+name: Claims
+version: '1.0-SNAPSHOT'
+main: de.eindaniel.claims.Claims
+api-version: '1.21'
