@@ -1,11 +1,9 @@
 package de.eindaniel.claims.claim;
 
-
 import org.bukkit.Location;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
-
 
 public class Claim {
     private final UUID owner;
@@ -14,18 +12,30 @@ public class Claim {
     private final boolean adminClaim;
     public final Set<UUID> trusted = new HashSet<>();
 
-
     public Claim(UUID owner, Location first, Location second, boolean adminClaim) {
         this.owner = owner;
         this.adminClaim = adminClaim;
-        int minX = Math.min(first.getBlockX(), second.getBlockX());
-        int minZ = Math.min(first.getBlockZ(), second.getBlockZ());
-        int maxX = Math.max(first.getBlockX(), second.getBlockX());
-        int maxZ = Math.max(first.getBlockZ(), second.getBlockZ());
-        this.min = new Location(first.getWorld(), minX, 0, minZ);
-        this.max = new Location(first.getWorld(), maxX, 256, maxZ);
+        this.min = getMinLocation(first, second);
+        this.max = getMaxLocation(first, second);
     }
 
+    public static Location getMinLocation(Location a, Location b) {
+        return new Location(
+                a.getWorld(),
+                Math.min(a.getBlockX(), b.getBlockX()),
+                Math.min(a.getBlockY(), b.getBlockY()),
+                Math.min(a.getBlockZ(), b.getBlockZ())
+        );
+    }
+
+    public static Location getMaxLocation(Location a, Location b) {
+        return new Location(
+                a.getWorld(),
+                Math.max(a.getBlockX(), b.getBlockX()),
+                Math.max(a.getBlockY(), b.getBlockY()),
+                Math.max(a.getBlockZ(), b.getBlockZ())
+        );
+    }
 
     public Location getMin() { return min; }
     public Location getMax() { return max; }

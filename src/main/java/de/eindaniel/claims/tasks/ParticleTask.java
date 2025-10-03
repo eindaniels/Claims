@@ -26,11 +26,11 @@ public class ParticleTask extends BukkitRunnable {
                     World w = min.getWorld();
                     if (w == null) continue;
                     int y = p.getLocation().getBlockY();
-                    for (int x = min.getBlockX(); x <= max.getBlockX(); x += Math.max(1, (max.getBlockX()-min.getBlockX())/20 + 1)) {
-                        p.spawnParticle(Particle.HAPPY_VILLAGER, new Location(w, x, y, min.getBlockZ()), 1);
+                    for (int x = min.getBlockX(); x <= max.getBlockX(); x += Math.max(1, (max.getBlockX()-min.getBlockX())/20)) {
+                        p.spawnParticle(Particle.HAPPY_VILLAGER, new Location(w, x , y, min.getBlockZ()), 1);
                         p.spawnParticle(Particle.HAPPY_VILLAGER, new Location(w, x, y, max.getBlockZ()), 1);
                     }
-                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z += Math.max(1, (max.getBlockZ()-min.getBlockZ())/20 + 1)) {
+                    for (int z = min.getBlockZ(); z <= max.getBlockZ(); z += Math.max(1, (max.getBlockZ()-min.getBlockZ())/20)) {
                         p.spawnParticle(Particle.HAPPY_VILLAGER, new Location(w, min.getBlockX(), y, z), 1);
                         p.spawnParticle(Particle.HAPPY_VILLAGER, new Location(w, max.getBlockX(), y, z), 1);
                     }
