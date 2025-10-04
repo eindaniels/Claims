@@ -28,7 +28,7 @@ public class UntrustCommand extends Command {
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         if (target == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Spieler konnte nicht gefunden werden."))); return true; }
         c.removeTrusted(target.getUniqueId());
-        plugin.claimManager.saveClaimsAsync();
+        plugin.claimConfig().removeTrusted(c, target.getUniqueId());
         p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#1fff17>" + target.getName() + " wurde erfolgreich entfernt.")));
         return true;
     }

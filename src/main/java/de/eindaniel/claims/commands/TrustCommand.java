@@ -28,7 +28,7 @@ public class TrustCommand extends Command {
         Player target = Bukkit.getPlayer(args[0]);
         if (target == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Spieler ist nicht Online."))); return true; }
         c.addTrusted(target.getUniqueId());
-        plugin.claimManager.saveClaimsAsync();
+        plugin.claimConfig().addTrusted(c, target.getUniqueId());
         p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#1fff17>" + target.getName() + " wurde erfolgreich hinzugefügt.")));
         return true;
     }
