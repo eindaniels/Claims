@@ -8,6 +8,7 @@ import de.eindaniel.claims.listeners.ClaimCreationListener;
 import de.eindaniel.claims.listeners.ExplosionListener;
 import de.eindaniel.claims.listeners.InteractListener;
 import de.eindaniel.claims.tasks.ParticleTask;
+import de.eindaniel.claims.util.PlayerData;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -35,20 +36,23 @@ public class Claims extends JavaPlugin implements Listener {
     public Map<UUID, Selection> selections = new HashMap<>();
     public Set<UUID> adminClaimMode = new HashSet<>();
     private File claimsFile;
-    private YamlConfiguration claimConfig;
+    private ClaimConfig claimConfig;
     private ParticleTask particleTask;
+    private PlayerData playerData;
 
+    public ClaimConfig claimConfig() { return claimConfig; }
+    public PlayerData playerData() { return playerData; }
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
         getServer().getPluginManager().registerEvents(this, this);
 
-
+        playerData = new PlayerData(this);
+        claimConfig = new ClaimConfig(this);
         claimManager = new ClaimManager(this);
-        this.claimsFile = new File(getDataFolder(), "claims.yml");
-        this.claimConfig = YamlConfiguration.loadConfiguration(claimsFile);
-        claimManager.loadFromConfig(claimConfig);
+
+        claimManager.loadAllClaims();
 
 
 // Commands
@@ -75,12 +79,7 @@ public class Claims extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        claimManager.saveToConfig(claimConfig);
-        try {
-            claimConfig.save(claimsFile);
-        } catch (IOException e) {
-            getLogger().log(Level.SEVERE, "Fehler beim Speichern der claims.yml", e);
-        }
+
     }
 
     public static Component getPrefix() {
