@@ -56,6 +56,12 @@ public class ClaimConfig {
         saveConfig();
     }
 
+    public void removeClaim(Claim claim) {
+        UUID id = claim.getId();
+        config.set("claims." + "id", null);
+        saveConfig();
+    }
+
     public List<Claim> getAllClaims() {
         List<Claim> claimList = new ArrayList<>();
         for (String id : config.getConfigurationSection("claims").getKeys(false)) {

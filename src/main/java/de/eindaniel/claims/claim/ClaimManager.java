@@ -16,7 +16,10 @@ public class ClaimManager {
         plugin.claimConfig().saveClaim(c);
         claims.add(c);
     }
-    public void removeClaim(Claim c) { claims.remove(c); }
+    public void removeClaim(Claim c) {
+        plugin.claimConfig().removeClaim(c);
+        claims.remove(c);
+    }
 
     public void loadAllClaims() {
         claims.addAll(plugin.claimConfig().getAllClaims());

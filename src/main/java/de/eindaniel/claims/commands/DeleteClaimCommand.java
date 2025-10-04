@@ -26,7 +26,6 @@ public class DeleteClaimCommand extends Command {
             return true;
         }
         plugin.claimManager.removeClaim(c);
-        plugin.claimManager.saveClaimsAsync();
         p.sendMessage("§aClaim wurde gelöscht.");
         return true;
     }
