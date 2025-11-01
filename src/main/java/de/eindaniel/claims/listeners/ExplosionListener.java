@@ -5,6 +5,7 @@ import de.eindaniel.claims.Claims;
 import de.eindaniel.claims.claim.Claim;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.block.Block;
 
@@ -20,5 +21,14 @@ public class ExplosionListener implements Listener {
             Claim c = plugin.claimManager.getClaimAt(block.getLocation());
             return c != null; // alle Blöcke in Claims werden geschützt
         });
+    }
+
+    @EventHandler
+    public void onDamage(EntityDamageEvent event) {
+        Claim c = plugin.claimManager.getClaimAt(event.getEntity().getLocation());
+        if (c == null) return;
+        if (c.isAdminClaim()) {
+            event.setCancelled(true);
+        }
     }
 }

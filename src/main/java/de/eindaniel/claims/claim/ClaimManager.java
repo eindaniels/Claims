@@ -22,6 +22,12 @@ public class ClaimManager {
     }
 
     public void loadAllClaims() {
+        if (plugin.claimConfig().getAllClaims() == null) return;
+        for (Claim c : plugin.claimConfig().getAllClaims()) {
+            for (UUID uuids : plugin.claimConfig().getTrusted(c)) {
+                c.addTrusted(uuids);
+            }
+        }
         claims.addAll(plugin.claimConfig().getAllClaims());
     }
 

@@ -74,7 +74,7 @@ public class ClaimCreationListener implements Listener {
             }
 
             // Claim erstellen (adminClaim = false)
-            Claim claim = new Claim(UUID.randomUUID(), p.getUniqueId(), min, max, false, Collections.emptyList());
+            Claim claim = new Claim(UUID.randomUUID(), p.getUniqueId(), min, max, plugin.getAdminClaimMode().contains(p.getUniqueId()), Collections.emptyList());
             plugin.claimManager.addClaim(claim);
             plugin.claimManager.removeClaimBlocks(p.getUniqueId(), area);
 

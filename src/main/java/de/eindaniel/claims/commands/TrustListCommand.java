@@ -26,8 +26,8 @@ public class TrustListCommand extends Command {
         Claim c = plugin.claimManager.getClaimAt(p.getLocation());
         if (c == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#1fff17>Du stehst in keinem Claim!"))); return true; }
         p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Diese Spieler sind hier getrusted:")));
-        if (c.trusted.isEmpty()) { p.sendMessage("§7Keine"); return true; }
-        for (UUID u : c.trusted) {
+        if (c.getTrusted().isEmpty()) { p.sendMessage("§7Keine"); return true; }
+        for (UUID u : c.getTrusted()) {
             OfflinePlayer off = Bukkit.getOfflinePlayer(u);
             // TODO Cytooxien Magic
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>" + (off.getName() == null ? u.toString() : off.getName()))));

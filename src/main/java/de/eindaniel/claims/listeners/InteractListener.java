@@ -6,9 +6,12 @@ import de.eindaniel.claims.claim.Claim;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 
@@ -37,9 +40,7 @@ public class InteractListener implements Listener {
         if (type == Material.CHEST || type == Material.BARREL || type == Material.FURNACE ||
                 type == Material.BLAST_FURNACE || type == Material.SMOKER ||
                 type == Material.DISPENSER || type == Material.DROPPER ||
-                type == Material.HOPPER || type.toString().contains("DOOR") ||
-                type.toString().contains("SHULKER_BOX") ||
-                type.toString().contains("TRAPDOOR")) {
+                type == Material.HOPPER || type.toString().contains("SHULKER_BOX")) {
 
 
             if (c.isAdminClaim() && !p.hasPermission("claims.admin")) {
@@ -47,9 +48,42 @@ public class InteractListener implements Listener {
                 p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
                 return;
             }
-            if (!c.isOwner(p.getUniqueId()) && !c.trusted.contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
+            if (c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
                 e.setCancelled(true);
                 p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntitiyDamage(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player) return;
+        Claim c  = plugin.claimManager.getClaimAt(event.getEntity().getLocation());
+
+        if (c.isAdminClaim() && !event.getDamager().hasPermission("claims.admin")) {
+            event.setCancelled(true);
+            event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
+            return;
+        }
+        if (c.isOwner(event.getDamager().getUniqueId()) && !c.getTrusted().contains(event.getDamager().getUniqueId()) && !event.getDamager().hasPermission("claims.admin")) {
+            event.setCancelled(true);
+            event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
+        }
+    }
+
+    @EventHandler
+    public void onEntityInteract(PlayerInteractEntityEvent event) {
+        Claim c  = plugin.claimManager.getClaimAt(event.getPlayer().getLocation());
+
+        if (event.getRightClicked().getType() == EntityType.VILLAGER) {
+            if (c.isAdminClaim() && !event.getPlayer().hasPermission("claims.admin")) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
+                return;
+            }
+            if (c.isOwner(event.getPlayer().getUniqueId()) && !c.getTrusted().contains(event.getPlayer().getUniqueId()) && !event.getPlayer().hasPermission("claims.admin")) {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
             }
         }
     }

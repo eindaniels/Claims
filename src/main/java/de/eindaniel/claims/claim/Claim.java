@@ -10,7 +10,7 @@ public class Claim {
     private final Location min;
     private final Location max;
     private final boolean adminClaim;
-    public List<UUID> trusted;
+    private final List<UUID> trusted; // private, mutable internally
 
     public Claim(UUID id, UUID owner, Location first, Location second, boolean adminClaim, List<UUID> trusted) {
         this.id = id;
@@ -18,7 +18,7 @@ public class Claim {
         this.adminClaim = adminClaim;
         this.min = getMinLocation(first, second);
         this.max = getMaxLocation(first, second);
-        this.trusted = trusted;
+        this.trusted = (trusted == null) ? new ArrayList<>() : new ArrayList<>(trusted);
     }
 
     public static Location getMinLocation(Location a, Location b) {
@@ -41,19 +41,31 @@ public class Claim {
 
     public Location getMin() { return min; }
     public Location getMax() { return max; }
-    public boolean isOwner(UUID id) { return owner.equals(id); }
+    public boolean isOwner(UUID id) { return owner == null || !owner.equals(id); }
     public boolean isAdminClaim() { return adminClaim; }
-    public void addTrusted(UUID id) { trusted.add(id); }
-    public void removeTrusted(UUID id) { trusted.remove(id); }
+
+    public void addTrusted(UUID id) {
+        if (id == null) return;
+        if (trusted.contains(id)) return;
+        trusted.add(id);
+    }
+
+    public void removeTrusted(UUID id) {
+        if (id == null) return;
+        trusted.remove(id);
+    }
 
     public UUID getId() {
         return id;
     }
 
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
     public List<UUID> getTrusted() {
         return trusted;
     }
-
     public UUID getOwner() {
         return owner;
     }

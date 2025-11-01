@@ -23,7 +23,7 @@ public class UntrustCommand extends Command {
         if (!(sender instanceof Player p)) { sender.sendMessage("Nur Spieler"); return true; }
         Claim c = plugin.claimManager.getClaimAt(p.getLocation());
         if (c == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du stehst in keinem Claim!"))); return true; }
-        if (!c.isOwner(p.getUniqueId()) && !p.hasPermission("claims.admin")) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du hast nicht die Berechtigung diesen Befehl auszuführen."))); return true; }
+        if (c.isOwner(p.getUniqueId()) && !p.hasPermission("claims.admin")) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du hast nicht die Berechtigung diesen Befehl auszuführen."))); return true; }
         if (args.length < 1) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Richtige Verwendung <dark_gray>› <#fbecab>/untrust <Spieler>"))); return true; }
         OfflinePlayer target = Bukkit.getOfflinePlayer(args[0]);
         if (target == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Spieler konnte nicht gefunden werden."))); return true; }
