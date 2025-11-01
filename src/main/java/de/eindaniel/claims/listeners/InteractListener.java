@@ -3,6 +3,7 @@ package de.eindaniel.claims.listeners;
 
 import de.eindaniel.claims.Claims;
 import de.eindaniel.claims.claim.Claim;
+import io.papermc.paper.event.player.PlayerOpenSignEvent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -60,6 +61,8 @@ public class InteractListener implements Listener {
         if (event.getEntity() instanceof Player) return;
         Claim c  = plugin.claimManager.getClaimAt(event.getEntity().getLocation());
 
+        if (c == null) return;
+
         if (c.isAdminClaim() && !event.getDamager().hasPermission("claims.admin")) {
             event.setCancelled(true);
             event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
@@ -75,6 +78,8 @@ public class InteractListener implements Listener {
     public void onEntityInteract(PlayerInteractEntityEvent event) {
         Claim c  = plugin.claimManager.getClaimAt(event.getPlayer().getLocation());
 
+        if (c == null) return;
+
         if (event.getRightClicked().getType() == EntityType.VILLAGER) {
             if (c.isAdminClaim() && !event.getPlayer().hasPermission("claims.admin")) {
                 event.setCancelled(true);
@@ -85,6 +90,23 @@ public class InteractListener implements Listener {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
             }
+        }
+    }
+
+    @EventHandler
+    public void onSignOpen(PlayerOpenSignEvent event) {
+        Claim c = plugin.claimManager.getClaimAt(event.getPlayer().getLocation());
+
+        if (c == null) return;
+
+        if (c.isAdminClaim() && !event.getPlayer().hasPermission("claims.admin")) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
+            return;
+        }
+        if (c.isOwner(event.getPlayer().getUniqueId()) && !c.getTrusted().contains(event.getPlayer().getUniqueId()) && !event.getPlayer().hasPermission("claims.admin")) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
         }
     }
 }
