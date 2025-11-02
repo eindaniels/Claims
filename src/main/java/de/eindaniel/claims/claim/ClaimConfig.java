@@ -43,7 +43,7 @@ public class ClaimConfig {
     public void addTrusted(Claim claim, UUID uuid) {
         List<UUID> trusted = claim.getTrusted();
         trusted.add(uuid);
-        config.set("claims." + claim.getId() + ".trusted", uuid.toString());
+        config.set("claims." + claim.getId() + ".trusted", trusted.stream().map(UUID::toString).toList());
         saveConfig();
     }
 
