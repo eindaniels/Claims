@@ -56,9 +56,9 @@ public class ClaimConfig {
 
     public List<UUID> getTrusted(Claim claim) {
         List<UUID> trusted = new ArrayList<>();
-        for (String stuuid : config.getStringList("claims." + claim.getId() + ".trusted")) {
-            if (stuuid == null) return null;
-            trusted.add(UUID.fromString(stuuid));
+        for (Object object : config.getList("claims." + claim.getId() + ".trusted", Collections.emptyList())) {
+            UUID uuid = (UUID) object;
+            trusted.add(uuid);
         }
         return trusted;
     }
