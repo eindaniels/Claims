@@ -65,6 +65,7 @@ public class Claims extends JavaPlugin implements Listener {
         commandMap.register("claims", new AdminClaimCommand(this));
         commandMap.register("claims", new ClaimInfoCommand(this));
         commandMap.register("claims", new DeleteAllMyClaims(this));
+        commandMap.register("claims", new ReloadConfig(this));
 
         getServer().getPluginManager().registerEvents(new BlockListener(this), this);
         getServer().getPluginManager().registerEvents(new ClaimCreationListener(this), this);

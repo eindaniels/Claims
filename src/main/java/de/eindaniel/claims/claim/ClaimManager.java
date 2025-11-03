@@ -21,15 +21,25 @@ public class ClaimManager {
         claims.remove(c);
     }
 
+    public void clearClaims() {
+        claims.clear();
+    }
+
     public void loadAllClaims() {
-        if (plugin.claimConfig().getAllClaims() == null) return;
-        for (Claim c : plugin.claimConfig().getAllClaims()) {
-            for (UUID uuids : plugin.claimConfig().getTrusted(c)) {
-                if (uuids == null) return;
-                c.addTrusted(uuids);
+        clearClaims();
+        List<Claim> loaded = plugin.claimConfig().getAllClaims();
+        if (loaded == null) return;
+        for (Claim c : loaded) {
+            List<UUID> trusted = plugin.claimConfig().getTrusted(c);
+            if (trusted != null) {
+                for (UUID uuid : trusted) {
+                    if (uuid != null) {
+                        c.addTrusted(uuid);
+                    }
+                }
             }
         }
-        claims.addAll(plugin.claimConfig().getAllClaims());
+        claims.addAll(loaded);
     }
 
     public Claim getClaimAt(Location loc) {
@@ -54,9 +64,10 @@ public class ClaimManager {
     }
 
     public void deleteAllPlayerClaims(UUID uuid) {
-        for (Claim c : claims) {
-            if (!c.isOwner(uuid)) return;
-            removeClaim(c);
+        for (Claim c : new ArrayList<>(claims)) {
+            if (c.isOwner(uuid)) {
+                removeClaim(c);
+            }
         }
     }
 

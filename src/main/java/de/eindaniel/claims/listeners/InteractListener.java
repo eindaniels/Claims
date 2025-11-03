@@ -57,23 +57,24 @@ public class InteractListener implements Listener {
     }
 
     @EventHandler
-    public void onEntitiyDamage(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Player)) return;
         if (event.getEntity() instanceof Player) return;
-        Claim c  = plugin.claimManager.getClaimAt(event.getEntity().getLocation());
-
+        Claim c = plugin.claimManager.getClaimAt(event.getEntity().getLocation());
         if (c == null) return;
 
-        if (c.isOwner(event.getDamager().getUniqueId())) return;
+        Player damager = (Player) event.getDamager();
 
-        if (c.isAdminClaim() && !event.getDamager().hasPermission("claims.admin")) {
+        if (c.isOwner(damager.getUniqueId()) || c.getTrusted().contains(damager.getUniqueId()) || damager.hasPermission("claims.admin")) return;
+
+        if (c.isAdminClaim() && !damager.hasPermission("claims.admin")) {
             event.setCancelled(true);
-            event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
+            damager.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
             return;
         }
-        if (c.isOwner(event.getDamager().getUniqueId()) && !c.getTrusted().contains(event.getDamager().getUniqueId()) && !event.getDamager().hasPermission("claims.admin")) {
-            event.setCancelled(true);
-            event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
-        }
+
+        event.setCancelled(true);
+        damager.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du hast keine Rechte in diesem Claim!")));
     }
 
     @EventHandler
