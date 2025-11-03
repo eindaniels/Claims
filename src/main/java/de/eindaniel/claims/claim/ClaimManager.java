@@ -53,6 +53,13 @@ public class ClaimManager {
         return false;
     }
 
+    public void deleteAllPlayerClaims(UUID uuid) {
+        for (Claim c : claims) {
+            if (!c.isOwner(uuid)) return;
+            removeClaim(c);
+        }
+    }
+
     private boolean rectsOverlap(Location aMin, Location aMax, Location bMin, Location bMax) {
         return aMin.getBlockX() <= bMax.getBlockX() && aMax.getBlockX() >= bMin.getBlockX() &&
                 aMin.getBlockZ() <= bMax.getBlockZ() && aMax.getBlockZ() >= bMin.getBlockZ();

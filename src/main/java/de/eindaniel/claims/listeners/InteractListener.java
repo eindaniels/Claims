@@ -63,6 +63,8 @@ public class InteractListener implements Listener {
 
         if (c == null) return;
 
+        if (c.isOwner(event.getDamager().getUniqueId())) return;
+
         if (c.isAdminClaim() && !event.getDamager().hasPermission("claims.admin")) {
             event.setCancelled(true);
             event.getDamager().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht interagieren.")));
