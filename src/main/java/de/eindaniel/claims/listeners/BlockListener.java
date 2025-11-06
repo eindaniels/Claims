@@ -1,26 +1,21 @@
 package de.eindaniel.claims.listeners;
 
-
 import de.eindaniel.claims.Claims;
 import de.eindaniel.claims.claim.Claim;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockFromToEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.entity.Player;
+import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.inventory.ItemStack;
-
 
 public class BlockListener implements Listener {
     private final Claims plugin;
     public BlockListener(Claims plugin) { this.plugin = plugin; }
-
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent e) {
@@ -32,12 +27,11 @@ public class BlockListener implements Listener {
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht abbauen!")));
             return;
         }
-        if (c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
+        if (!c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
             e.setCancelled(true);
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht!")));
         }
     }
-
 
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
@@ -49,7 +43,7 @@ public class BlockListener implements Listener {
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht bauen!")));
             return;
         }
-        if (c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
+        if (!c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
             e.setCancelled(true);
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht!")));
         }
@@ -59,7 +53,8 @@ public class BlockListener implements Listener {
     public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
         Player player = e.getPlayer();
         ItemStack bucket = e.getItemStack();
-        if (bucket == null || bucket.getType() != Material.LAVA_BUCKET) return;
+        // Wir behandeln hier Lava und Wasser (bereits geändert früher). Weiter unten bleibt Ownership-Check korrekt.
+        if (bucket == null || (bucket.getType() != Material.LAVA_BUCKET && bucket.getType() != Material.WATER_BUCKET)) return;
 
         Block target = e.getBlockClicked().getRelative(e.getBlockFace());
         Claim c = plugin.claimManager.getClaimAt(target.getLocation());
@@ -67,10 +62,10 @@ public class BlockListener implements Listener {
 
         if (c.isAdminClaim() && !player.hasPermission("claims.admin")) {
             e.setCancelled(true);
-            player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier keine Lava platzieren!")));
+            player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier keine Flüssigkeiten platzieren!")));
             return;
         }
-        if (c.isOwner(player.getUniqueId()) && !c.getTrusted().contains(player.getUniqueId()) && !player.hasPermission("claims.admin")) {
+        if (!c.isOwner(player.getUniqueId()) && !c.getTrusted().contains(player.getUniqueId()) && !player.hasPermission("claims.admin")) {
             e.setCancelled(true);
             player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht!")));
         }
@@ -100,10 +95,9 @@ public class BlockListener implements Listener {
             player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier keine Felder zertrampeln!")));
             return;
         }
-        if (c.isOwner(player.getUniqueId()) && !c.getTrusted().contains(player.getUniqueId()) && !player.hasPermission("claims.admin")) {
+        if (!c.isOwner(player.getUniqueId()) && !c.getTrusted().contains(player.getUniqueId()) && !player.hasPermission("claims.admin")) {
             e.setCancelled(true);
             player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht!")));
         }
     }
-
 }
