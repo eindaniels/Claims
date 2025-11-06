@@ -27,6 +27,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -50,12 +51,38 @@ public class Claims extends JavaPlugin implements Listener {
 
         playerData = new PlayerData(this);
         claimConfig = new ClaimConfig(this);
-        claimManager = new ClaimManager(this);
 
+        // --- Backup der claims.yml vor Migration ---
+        try {
+            File dataFolder = getDataFolder();
+            if (!dataFolder.exists()) dataFolder.mkdirs();
+            File claimsYml = new File(dataFolder, "claims.yml");
+            if (claimsYml.exists()) {
+                String backupName = "claims_backup_" + System.currentTimeMillis() + ".yml";
+                File backup = new File(dataFolder, backupName);
+                Files.copy(claimsYml.toPath(), backup.toPath());
+                getLogger().info("Backup der claims.yml erstellt: " + backup.getName());
+            }
+        } catch (IOException ex) {
+            getLogger().log(Level.WARNING, "Fehler beim Erstellen des claims.yml Backups: " + ex.getMessage(), ex);
+        }
+
+        // --- Migration trusted-Einträge (normalisiert Listen, entfernt Duplikate) ---
+        try {
+            int migrated = claimConfig.migrateTrustedEntries();
+            if (migrated > 0) {
+                getLogger().info("Claim trusted-Migration: " + migrated + " claims wurden normalisiert.");
+            } else {
+                getLogger().info("Claim trusted-Migration: keine Änderungen nötig.");
+            }
+        } catch (Exception ex) {
+            getLogger().log(Level.WARNING, "Fehler bei trusted-Migration: " + ex.getMessage(), ex);
+        }
+
+        claimManager = new ClaimManager(this);
         claimManager.loadAllClaims();
 
-
-// Commands
+        // Commands
         CommandMap commandMap = Bukkit.getCommandMap();
         commandMap.register("claims", new GiveClaimBlocksCommand(this));
         commandMap.register("claims", new TrustCommand(this));
@@ -66,6 +93,8 @@ public class Claims extends JavaPlugin implements Listener {
         commandMap.register("claims", new ClaimInfoCommand(this));
         commandMap.register("claims", new DeleteAllMyClaims(this));
         commandMap.register("claims", new ReloadConfig(this));
+        commandMap.register("claims", new ConvertTrustedCommand(this));
+        commandMap.register("claims", new TransferClaimCommand(this));
 
         getServer().getPluginManager().registerEvents(new BlockListener(this), this);
         getServer().getPluginManager().registerEvents(new ClaimCreationListener(this), this);
