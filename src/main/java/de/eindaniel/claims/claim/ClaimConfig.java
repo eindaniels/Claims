@@ -40,25 +40,34 @@ public class ClaimConfig {
         }
     }
 
+    // Speichere trusted immer als Liste von UUID-Strings
     public void addTrusted(Claim claim, UUID uuid) {
+        if (claim == null || uuid == null) return;
+        // claim bereits angepasst (claim.addTrusted) — sichere Speicherung:
         List<UUID> trusted = claim.getTrusted();
-        trusted.add(uuid);
-        config.set("claims." + claim.getId() + ".trusted", trusted.stream().map(UUID::toString).toList());
+        List<String> trustedStrings = (trusted == null) ? Collections.emptyList() : trusted.stream().map(UUID::toString).toList();
+        config.set("claims." + claim.getId() + ".trusted", trustedStrings);
         saveConfig();
     }
 
     public void removeTrusted(Claim claim, UUID uuid) {
+        if (claim == null) return;
         List<UUID> trusted = claim.getTrusted();
-        trusted.remove(uuid);
-        config.set("claims." + claim.getId() + ".trusted", trusted);
+        List<String> trustedStrings = (trusted == null) ? Collections.emptyList() : trusted.stream().map(UUID::toString).toList();
+        config.set("claims." + claim.getId() + ".trusted", trustedStrings);
         saveConfig();
     }
 
     public List<UUID> getTrusted(Claim claim) {
         List<UUID> trusted = new ArrayList<>();
+        if (claim == null) return trusted;
         for (String stuuid : config.getStringList("claims." + claim.getId() + ".trusted")) {
-            if (stuuid == null) return null;
-            trusted.add(UUID.fromString(stuuid));
+            if (stuuid == null || stuuid.isBlank()) continue;
+            try {
+                trusted.add(UUID.fromString(stuuid));
+            } catch (IllegalArgumentException ex) {
+                plugin.getLogger().warning("Invalid trusted UUID in claim " + claim.getId() + ": " + stuuid);
+            }
         }
         return trusted;
     }
@@ -72,18 +81,19 @@ public class ClaimConfig {
         boolean adminClaim = claim.isAdminClaim();
         List<UUID> trusted = claim.getTrusted();
 
-        config.set("claims." + id + ".owner", owner.toString());
+        config.set("claims." + id + ".owner", owner == null ? null : owner.toString());
         config.set("claims." + id + ".min", min);
         config.set("claims." + id + ".max", max);
         config.set("claims." + id + ".adminClaim", adminClaim);
-        config.set("claims." + id + ".trusted", trusted.toString());
+        config.set("claims." + id + ".trusted", (trusted == null) ? Collections.emptyList() : trusted.stream().map(UUID::toString).toList());
 
         saveConfig();
     }
 
     public void removeClaim(Claim claim) {
         UUID id = claim.getId();
-        config.set("claims." + "id", null);
+        // Entferne den claims.<id>-Knoten
+        config.set("claims." + id.toString(), null);
         saveConfig();
     }
 

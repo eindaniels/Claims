@@ -29,16 +29,6 @@ public class ClaimManager {
         clearClaims();
         List<Claim> loaded = plugin.claimConfig().getAllClaims();
         if (loaded == null) return;
-        for (Claim c : loaded) {
-            List<UUID> trusted = plugin.claimConfig().getTrusted(c);
-            if (trusted != null) {
-                for (UUID uuid : trusted) {
-                    if (uuid != null) {
-                        c.addTrusted(uuid);
-                    }
-                }
-            }
-        }
         claims.addAll(loaded);
     }
 
@@ -87,30 +77,4 @@ public class ClaimManager {
         int current = getClaimBlocks(id);
         plugin.playerData().setClaimBlocks(id, current - amt);
     }
-
-//    public void tryCreateClaim(Player p, Selection sel, boolean adminMode) {
-//        int area = sel.area();
-//        int blocksAvailable = getClaimBlocks(p.getUniqueId());
-//        Location min = Claim.getMinLocation(sel.first, sel.second);
-//        Location max = Claim.getMaxLocation(sel.first, sel.second);
-//
-//        if (!adminMode && overlapsWithExistingClaim(min, max)) {
-//            p.sendMessage("§cDieser Bereich überschneidet sich mit einem bestehenden Claim!");
-//            return;
-//        }
-//        if (adminMode) {
-//            Claim c = new Claim(UUID.randomUUID(), p.getUniqueId(), sel.first, sel.second, true);
-//            addClaim(c);
-//            p.sendMessage("§bAdmin-Claim erstellt.");
-//        } else {
-//            if (blocksAvailable < area) {
-//                p.sendMessage("§cNicht genug Claim-Blöcke.");
-//            } else {
-//                Claim c = new Claim(UUID.randomUUID() ,p.getUniqueId(), sel.first, sel.second, false);
-//                addClaim(c);
-//                removeClaimBlocks(p.getUniqueId(), area);
-//                p.sendMessage("§aClaim erstellt. Verbrauchte Blöcke: " + area);
-//            }
-//        }
-//    }
 }

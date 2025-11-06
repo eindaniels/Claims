@@ -2,7 +2,9 @@ package de.eindaniel.claims.claim;
 
 import org.bukkit.Location;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class Claim {
     private UUID id;
@@ -10,7 +12,7 @@ public class Claim {
     private final Location min;
     private final Location max;
     private final boolean adminClaim;
-    private final List<UUID> trusted; // private, mutable internally
+    private final List<UUID> trusted;
 
     public Claim(UUID id, UUID owner, Location first, Location second, boolean adminClaim, List<UUID> trusted) {
         this.id = id;
@@ -41,7 +43,13 @@ public class Claim {
 
     public Location getMin() { return min; }
     public Location getMax() { return max; }
-    public boolean isOwner(UUID id) { return owner == null || !owner.equals(id); }
+
+    // Korrekte isOwner-Implementierung: true wenn die UUID der Owner ist
+    public boolean isOwner(UUID id) {
+        if (id == null) return false;
+        return owner != null && owner.equals(id);
+    }
+
     public boolean isAdminClaim() { return adminClaim; }
 
     public void addTrusted(UUID id) {

@@ -27,10 +27,10 @@ public class ClaimInfoCommand extends Command {
             return false;
         }
         player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Inhaber <dark_gray>→ <#fbecab>" + Bukkit.getOfflinePlayer(c.getOwner()).getName())));
-        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>UUID (Claim) <dark_gray>→ <#fbecab>" + Bukkit.getOfflinePlayer(c.getId()))));
+        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>UUID (Claim) <dark_gray>→ <#fbecab>" + c.getId().toString())));
         player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Admin Claim <dark_gray>→ <#fbecab>" + c.isAdminClaim())));
-        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Min <dark_gray>→ <#fbecab>" + c.getMin())));
-        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Max <dark_gray>→ <#fbecab>" + c.getMax())));
+        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Min <dark_gray>→ <#fbecab>" + c.getMin().getBlockX() + c.getMin().getBlockY() + c.getMin().getBlockZ())));
+        player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Max <dark_gray>→ <#fbecab>" + c.getMax().getBlockX() + c.getMax().getBlockY() + c.getMax().getBlockZ())));
         return true;
     }
 }

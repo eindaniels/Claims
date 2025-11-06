@@ -1,6 +1,5 @@
 package de.eindaniel.claims.commands;
 
-
 import de.eindaniel.claims.Claims;
 import de.eindaniel.claims.claim.Claim;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -10,8 +9,9 @@ import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
-
 
 public class TrustListCommand extends Command {
     private final Claims plugin;
@@ -27,10 +27,12 @@ public class TrustListCommand extends Command {
         if (c == null) { p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#1fff17>Du stehst in keinem Claim!"))); return true; }
         p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>Diese Spieler sind hier getrusted:")));
         if (c.getTrusted().isEmpty()) { p.sendMessage("§7Keine"); return true; }
-        for (UUID u : c.getTrusted()) {
+
+        Set<UUID> unique = new LinkedHashSet<>(c.getTrusted());
+        for (UUID u : unique) {
             OfflinePlayer off = Bukkit.getOfflinePlayer(u);
-            // TODO Cytooxien Magic
-            p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>" + (off.getName() == null ? u.toString() : off.getName()))));
+            String name = (off == null || off.getName() == null) ? u.toString() : off.getName();
+            p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<gray>" + name)));
         }
         return true;
     }

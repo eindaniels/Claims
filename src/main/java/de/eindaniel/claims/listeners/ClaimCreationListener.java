@@ -34,6 +34,11 @@ public class ClaimCreationListener implements Listener {
         Block clicked = e.getClickedBlock();
         Location loc = clicked.getLocation();
 
+        if (p.getWorld().equals("world_the_end") && plugin.getAdminClaimMode().contains(p.getUniqueId())) {
+            p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du kannst in dieser Welt keinen Claim erstellen!")));
+            return;
+        }
+
         if (!firstCorner.containsKey(p.getUniqueId())) {
             // Erste Ecke setzen
             firstCorner.put(p.getUniqueId(), loc);

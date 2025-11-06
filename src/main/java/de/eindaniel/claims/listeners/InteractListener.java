@@ -12,8 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 
 public class InteractListener implements Listener {
@@ -110,6 +112,28 @@ public class InteractListener implements Listener {
         if (c.isOwner(event.getPlayer().getUniqueId()) && !c.getTrusted().contains(event.getPlayer().getUniqueId()) && !event.getPlayer().hasPermission("claims.admin")) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
+        }
+    }
+
+    @EventHandler
+    public void onPlayerBucketEmpty(PlayerBucketEmptyEvent e) {
+        Player player = e.getPlayer();
+        ItemStack bucket = e.getItemStack();
+        if (bucket == null ||
+                (bucket.getType() != Material.LAVA_BUCKET && bucket.getType() != Material.WATER_BUCKET)) return; // Lava ODER Wasser!
+
+        Block target = e.getBlockClicked().getRelative(e.getBlockFace());
+        Claim c = plugin.claimManager.getClaimAt(target.getLocation());
+        if (c == null) return;
+
+        if (c.isAdminClaim() && !player.hasPermission("claims.admin")) {
+            e.setCancelled(true);
+            player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier keine Flüssigkeiten platzieren!")));
+            return;
+        }
+        if (c.isOwner(player.getUniqueId()) && !c.getTrusted().contains(player.getUniqueId()) && !player.hasPermission("claims.admin")) {
+            e.setCancelled(true);
+            player.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier keine Flüssigkeiten platzieren!")));
         }
     }
 }
