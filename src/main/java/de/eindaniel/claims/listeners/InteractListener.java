@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -38,6 +40,26 @@ public class InteractListener implements Listener {
             e.setCancelled(true);
             p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Dieser Claim gehört dir nicht.")));
 
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
+        if (!(e.getRightClicked() instanceof Villager)) return;
+        Player p = e.getPlayer();
+
+        Claim c = plugin.claimManager.getClaimAt(e.getRightClicked().getLocation());
+        if (c == null) return;
+
+        if (c.isAdminClaim() && !p.hasPermission("claims.admin")) {
+            e.setCancelled(true);
+            p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht handeln.")));
+            return;
+        }
+
+        if (!c.isOwner(p.getUniqueId()) && !c.getTrusted().contains(p.getUniqueId()) && !p.hasPermission("claims.admin")) {
+            e.setCancelled(true);
+            p.sendMessage(Claims.getPrefix().append(MiniMessage.miniMessage().deserialize("<#ff1717>Du darfst hier nicht mit Dorfbewohnern handeln — dieser Claim gehört dir nicht.")));
         }
     }
 }
